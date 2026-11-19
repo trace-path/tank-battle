@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070a0e">
+  <meta name="description" content="坦克大战 —— 一个纯 HTML5 Canvas 打造的复古像素风街机小游戏。消灭敌军，守住基地！">
+  <title>坦克大战 · Tank Battle</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f14'/%3E%3Crect x='7' y='13' width='18' height='12' fill='%23ffcb45'/%3E%3Crect x='14' y='6' width='4' height='9' fill='%23ffcb45'/%3E%3Crect x='4' y='15' width='4' height='10' fill='%236b7c8c'/%3E%3Crect x='24' y='15' width='4' height='10' fill='%236b7c8c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="3" y="19" width="26" height="8" rx="4" fill="#39434e"/>
+        <circle cx="9" cy="23" r="3.2" fill="#1b222a"/>
+        <circle cx="16" cy="23" r="3.2" fill="#1b222a"/>
+        <circle cx="23" cy="23" r="3.2" fill="#1b222a"/>
+        <path d="M5 17h21v4H4z" fill="#e3ae32"/>
+        <rect x="13" y="10" width="9" height="8" rx="2" fill="#ffcb45"/>
+        <rect x="17" y="12" width="13" height="3.5" rx="1" fill="#ffcb45"/>
+        <rect x="28" y="11.5" width="3" height="4.5" fill="#e3ae32"/>
+        <rect x="14" y="11" width="3" height="5" fill="#ffe08a"/>
+        <rect x="11" y="7" width="1.5" height="5" fill="#ffcb45"/>
+      </svg>
+      <div class="brand-text">
+        <h1>TANK BATTLE</h1>
+        <p>坦克大战 · HTML5 ARCADE</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="切换声音" aria-pressed="false" title="声音开关 (M)">♪</button>
+      <button class="icon-btn" id="pauseBtn" type="button" aria-label="暂停游戏" title="暂停 (P)">❚❚</button>
+    </div>
+  </header>
+
+  <section class="hud" aria-label="游戏数据">
+    <div class="stat"><span class="stat-label">SCORE</span><span class="stat-value" id="score">000000</span></div>
+    <div class="stat hi"><span class="stat-label">HI-SCORE</span><span class="stat-value" id="hiScore">000000</span></div>
+    <div class="stat"><span class="stat-label">STAGE</span><span class="stat-value" id="stage">01</span></div>
+    <div class="stat"><span class="stat-label">LIVES</span><span class="stat-value" id="lives">03</span></div>
+    <div class="stat"><span class="stat-label">ENEMY</span><span class="stat-value" id="enemies">12</span></div>
+  </section>
+
+  <main class="stage">
+    <div class="cabinet">
+      <div class="screen">
+        <canvas id="game" width="416" height="416" aria-label="坦克大战游戏画面">你的浏览器不支持 Canvas，请更换现代浏览器。</canvas>
+        <div class="scanlines" aria-hidden="true"></div>
+        <div class="glare" aria-hidden="true"></div>
+
+        <div class="overlay is-visible" id="menuScreen">
+          <div class="panel">
+            <p class="panel-kicker">◆ INSERT COIN ◆</p>
+            <h2 class="panel-title">坦克大战</h2>
+            <p class="panel-sub">TANK BATTLE</p>
+            <div class="legend">
+              <span><b>WASD</b> / <b>方向键</b> 移动</span>
+              <span><b>SPACE</b> / <b>J</b> 开火</span>
+            </div>
+            <button class="btn btn-primary" data-action="start" type="button">开始战斗</button>
+            <p class="panel-foot">击毁闪烁的敌军可掉落道具<br>保护基地 · 消灭全部敌军</p>
+            <div class="hi-line">HI-SCORE <b id="menuHi">000000</b></div>
+          </div>
+        </div>
+
+        <div class="overlay" id="pauseScreen">
+          <div class="panel">
+            <p class="panel-kicker">PAUSED</p>
+            <h2 class="panel-title">已暂停</h2>
+            <div class="btn-row">
+              <button class="btn btn-primary" data-action="resume" type="button">继续</button>
+              <button class="btn" data-action="restart" type="button">重新开始</button>
+            </div>
+            <p class="panel-foot">按 <b>P</b> 继续战斗</p>
+          </div>
+        </div>
+
+        <div class="overlay" id="overScreen">
+          <div class="panel panel-danger">
+            <p class="panel-kicker">MISSION FAILED</p>
+            <h2 class="panel-title">GAME OVER</h2>
+            <div class="results">
+              <div class="result-row"><span>SCORE</span><b id="overScore">000000</b></div>
+              <div class="result-row"><span>STAGE</span><b id="overStage">01</b></div>
+              <div class="result-row"><span>HI-SCORE</span><b id="overHi">000000</b></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" data-action="restart" type="button">再来一局</button>
+              <button class="btn" data-action="menu" type="button">主菜单</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overlay" id="winScreen">
+          <div class="panel panel-win">
+            <p class="panel-kicker">ALL CLEAR</p>
+            <h2 class="panel-title">VICTORY</h2>
+            <p class="panel-sub">基地守住了，指挥官</p>
+            <div class="results">
+              <div class="result-row"><span>SCORE</span><b id="winScore">000000</b></div>
+              <div class="result-row"><span>STAGE</span><b id="winStage">03</b></div>
+              <div class="result-row"><span>HI-SCORE</span><b id="winHi">000000</b></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" data-action="restart" type="button">再战一次</button>
+              <button class="btn" data-action="menu" type="button">主菜单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cabinet-bar">
+        <span class="led" aria-hidden="true"></span>
+        <span>PLAYER 1</span>
+        <span class="cabinet-hint">守住基地 · 消灭所有敌军</span>
+      </div>
+    </div>
+  </main>
+
+  <section class="touch" aria-label="触屏控制">
+    <div class="dpad">
+      <button class="dpad-btn up" data-dir="0" type="button" aria-label="向上">▲</button>
+      <button class="dpad-btn left" data-dir="3" type="button" aria-label="向左">◀</button>
+      <button class="dpad-btn right" data-dir="1" type="button" aria-label="向右">▶</button>
+      <button class="dpad-btn down" data-dir="2" type="button" aria-label="向下">▼</button>
+    </div>
+    <button class="fire-btn" id="fireBtn" type="button" aria-label="开火">FIRE</button>
+  </section>
+
+  <footer class="footer">
+    <p class="keys">
+      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>方向键</kbd> 移动
+      · <kbd>SPACE</kbd> 开火 · <kbd>P</kbd> 暂停 · <kbd>M</kbd> 静音
+    </p>
+    <p class="pickups">
+      <span><i style="color:#ffd54a">★</i> 火力</span>
+      <span><i style="color:#6fe3ff">⬡</i> 护盾</span>
+      <span><i style="color:#ff7b6b">✹</i> 全屏爆破</span>
+      <span><i style="color:#7dffb0">♥</i> 生命</span>
+      <span><i style="color:#9bb8ff">❄</i> 冻结</span>
+    </p>
+  </footer>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
