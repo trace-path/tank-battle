@@ -15,6 +15,14 @@
   <img alt="license" src="https://img.shields.io/badge/license-MIT-ffcb45">
 </p>
 
+<p align="center">
+  <a href="https://trace-path.github.io/tank-battle/"><b>▶ 在线试玩</b></a>
+  &nbsp;·&nbsp;
+  <a href="#本地运行">本地运行</a>
+  &nbsp;·&nbsp;
+  <a href="#操作说明">操作说明</a>
+</p>
+
 ---
 
 ## 游戏简介
@@ -86,6 +94,10 @@ python3 -m http.server 8000
 然后访问终端提示的地址。
 
 ## 部署到 GitHub Pages
+
+当前部署地址：<https://trace-path.github.io/tank-battle/>
+
+重新部署步骤：
 
 1. 在 GitHub 仓库页面进入 **Settings → Pages**；
 2. **Build and deployment** 选择 **Deploy from a branch**；
